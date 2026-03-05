@@ -78,3 +78,18 @@ button {
 button:hover {
   background: #99365f;
 }
+
+
+.card ul {
+  list-style: none;
+  padding: 0;
+}
+
+.card li {
+  padding: 5px 0;
+}
+
+button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}

@@ -29,8 +29,28 @@ Vue.component('note-card', {
   template: `
     <div class="card">
       <h3>{{ card.title }}</h3>
+      <ul>
+        <li v-for="(item, index) in card.items" :key="index">
+          <input type="checkbox" v-model="item.completed" @change="$emit('item-changed', card.id)">
+          {{ item.text }}
+        </li>
+      </ul>
+      <button @click="addItem" :disabled="card.items.length >= 5">+ Item</button>
+      <button @click="removeItem" :disabled="card.items.length <= 3">- Item</button>
     </div>
-  `
+  `,
+  methods: {
+    addItem() {
+      if (this.card.items.length < 5) {
+        this.card.items.push({ text: 'Новая Задача', completed: false })
+      }
+    },
+    removeItem() {
+      if (this.card.items.length > 3) {
+        this.card.items.pop()
+      }
+    }
+  }
 })
 
 let app = new Vue({
@@ -49,7 +69,11 @@ let app = new Vue({
         column.cards.push({
           id: Date.now(),
           title: 'Новая карточка',
-          items: []
+          items: [
+            { text: 'Задача 1', completed: false },
+            { text: 'Задача 2', completed: false },
+            { text: 'Задача 3', completed: false }
+          ]
         })
       }
     }
