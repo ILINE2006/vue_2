@@ -13,12 +13,13 @@
     <div id="app">
         <h1>NOTES</h1>
         <div class="columns">
-          <note-column 
-            v-for="column in columns" 
-            :key="column.id"
-            :column="column">
-          </note-column>
-        </div>
+            <note-column 
+              v-for="column in columns" 
+              :key="column.id"
+              :column="column"
+              @add-card="addCard">
+            </note-column>
+          </div>
       </div>
 </body>
 </html>
