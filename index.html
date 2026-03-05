@@ -14,12 +14,14 @@
         <h1>NOTES</h1>
         <div class="columns">
             <note-column 
-              v-for="column in columns" 
-              :key="column.id"
-              :column="column"
-              @add-card="addCard">
+                v-for="column in columns" 
+                :key="column.id"
+                :column="column"
+                :is-locked="column.id === 1 && isColumn1Locked"
+                @add-card="addCard"
+                @item-changed="handleItemChanged">
             </note-column>
           </div>
-      </div>
+        </div>
 </body>
 </html>

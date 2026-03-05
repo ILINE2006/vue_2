@@ -94,3 +94,13 @@ button:disabled {
   cursor: not-allowed;
 }
 
+.column.locked {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.completed-date {
+  font-size: 0.8em;
+  color: #888;
+  margin-top: 5px;
+}
