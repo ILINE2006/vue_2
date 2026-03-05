@@ -1,15 +1,52 @@
+
+@font-face {
+  font-family: Another Danger;
+  src: url(/font/Another\ Danger\ -\ Demo.otf);
+}
+
+@font-face {
+  font-family: BlackCaspe;
+  src: url(/font/BlackCasper.ttf);
+}
+
+@font-face {
+  font-family: downcome;
+  src: url(/font/downcome.otf);
+}
+
 body {
-  font-family: Inter;
+  font-family: downcome;
   padding: 20px;
+  background-color: #f9f9f9;
+}
+
+h1 {
+  font-family: Another Danger;
+  text-align: center;
+  color: #000000;
+  font-weight: bold;
+  font-size: 50px;
+  letter-spacing: 19px;
 }
 
 .columns {
   display: flex;
   gap: 20px;
+  justify-content: center;
 }
 
 .column {
   flex: 1;
-  background: #f4f4f4;
+  max-width: 300px;
+  background: #e4e4e4;
   padding: 15px;
+  border-radius: 5px;
+  min-height: 400px;
+}
+
+.column h2 {
+  font-family: downcome;
+  font-size: 24px;
+  color: #1354cc;
+  letter-spacing: 3px;
 }

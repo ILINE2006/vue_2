@@ -7,17 +7,17 @@
    <script defer src="js/vue.js"></script>
    <script defer src="js/main.js"></script>
    <link rel="stylesheet" href="css/main.css">
-   <title>Заметки</title>
+   <title>NOTES</title>
 </head>
 <body>
     <div id="app">
-        <h1>Заметки</h1>
+        <h1>NOTES</h1>
         <div class="columns">
-          <div v-for="column in columns" 
-          :key="column.id" class="column">
-            <h2>{{ column.name }}</h2>
-            <p>Карточки: {{ column.cards.length }} / {{ column.maxCards || 'бесконечно' }}</p>
-          </div>
+          <note-column 
+            v-for="column in columns" 
+            :key="column.id"
+            :column="column">
+          </note-column>
         </div>
       </div>
 </body>
