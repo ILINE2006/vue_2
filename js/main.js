@@ -78,6 +78,20 @@ let app = new Vue({
       { id: 3, name: 'Блок 2', maxCards: null, cards: [] }
     ]
   },
+  mounted() {
+    const saved = localStorage.getItem('notesApp')
+    if (saved) {
+      this.columns = JSON.parse(saved)
+    }
+  },
+  watch: {
+    columns: {
+      handler(newVal) {
+        localStorage.setItem('notesApp', JSON.stringify(newVal))
+      },
+      deep: true
+    }
+  },
   computed: {
     isColumn1Locked() {
       const column2 = this.columns.find(c => c.id === 2)
