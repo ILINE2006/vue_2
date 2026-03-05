@@ -26,17 +26,24 @@ Vue.component('note-card', {
       required: true
     }
   },
+  computed: {
+    progress() {
+      const completed = this.card.items.filter(i => i.completed).length
+      return Math.round((completed / this.card.items.length) * 100)
+    }
+  },
   template: `
     <div class="card">
       <h3>{{ card.title }}</h3>
+      <p>{{ progress }}%</p>
       <ul>
         <li v-for="(item, index) in card.items" :key="index">
           <input type="checkbox" v-model="item.completed" @change="$emit('item-changed', card.id)">
           {{ item.text }}
         </li>
       </ul>
-      <button @click="addItem" :disabled="card.items.length >= 5">+ Item</button>
-      <button @click="removeItem" :disabled="card.items.length <= 3">- Item</button>
+      <button @click="addItem" :disabled="card.items.length >= 5">+ Добавить</button>
+      <button @click="removeItem" :disabled="card.items.length <= 3">- Удалить</button>
     </div>
   `,
   methods: {
