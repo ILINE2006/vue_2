@@ -12,14 +12,16 @@ Vue.component('note-column', {
   template: `
     <div class="column" :class="{ locked: isLocked }">
       <h2>{{ column.name }}</h2>
-      <p>карточки: {{ column.cards.length }} / {{ column.maxCards || 'бесконечно' }}</p>
+      <p>Карточки: {{ column.cards.length }} / {{ column.maxCards || 'бесконечно' }}</p>
       <note-card 
         v-for="card in column.cards" 
         :key="card.id"
         :card="card"
-        @item-changed="$emit('item-changed', $event)">
+        :is-locked="isLocked || column.id === 3"
+        @item-changed="$emit('item-changed', $event)"
+        @delete-card="$emit('delete-card', $event)">
       </note-card>
-      <button @click="$emit('add-card', column.id)" :disabled="isLocked">+ добавить карточку</button>
+      <button @click="$emit('add-card', column.id)" :disabled="isLocked">+ Добавить карточку</button>
     </div>
   `
 })
@@ -29,6 +31,10 @@ Vue.component('note-card', {
     card: {
       type: Object,
       required: true
+    },
+    isLocked: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
@@ -38,27 +44,44 @@ Vue.component('note-card', {
     }
   },
   template: `
-  <div class="card">
-    <h3>{{ card.title }}</h3>
+  <div class="card" :class="{ completed: progress === 100 }">
+    <h3>
+      <input 
+        v-if="!isLocked" 
+        v-model="card.title" 
+        class="card-title-input"
+        placeholder="Название карточки">
+      <span v-else>{{ card.title }}</span>
+    </h3>
     <div class="progress-bar">
-      <div class="progress-fill" :style="{ width: progress + '%' }"></div>
+      <div class="progress-fill"></div>
     </div>
     <p>{{ progress }}%</p>
     <ul>
       <li v-for="(item, index) in card.items" :key="index">
-        <input type="checkbox" v-model="item.completed" @change="$emit('item-changed', card.id)">
-        {{ item.text }}
+        <input 
+          type="checkbox" 
+          v-model="item.completed" 
+          @change="$emit('item-changed', card.id)"
+          :disabled="isLocked">
+        <input 
+          v-if="!isLocked"
+          v-model="item.text" 
+          class="item-input"
+          placeholder="Название задачи">
+        <span v-else>{{ item.text }}</span>
       </li>
     </ul>
-    <p v-if="card.completedAt" class="completed-date">Завершенный: {{ card.completedAt }}</p>
-    <button @click="addItem" :disabled="card.items.length >= 5">+ добавить</button>
-    <button @click="removeItem" :disabled="card.items.length <= 3">- удалить</button>
+    <p v-if="card.completedAt" class="completed-date">Завершено: {{ card.completedAt }}</p>
+    <button v-if="!isLocked" @click="addItem" :disabled="card.items.length >= 5">+ Добавить</button>
+    <button v-if="!isLocked" @click="removeItem" :disabled="card.items.length <= 3">- Удалить</button>
+    <button v-if="!isLocked" @click="$emit('delete-card', card.id)" class="delete-btn">- Удалить карточку</button>
   </div>
   `,
   methods: {
     addItem() {
       if (this.card.items.length < 5) {
-        this.card.items.push({ text: 'Новая Задача', completed: false })
+        this.card.items.push({ text: '', completed: false })
       }
     },
     removeItem() {
@@ -71,11 +94,11 @@ Vue.component('note-card', {
 
 let app = new Vue({
   el: '#app',
-   data: {
+  data: {
     columns: [
       { id: 1, name: 'Блок 1', maxCards: 3, cards: [] },
       { id: 2, name: 'Блок 2', maxCards: 5, cards: [] },
-      { id: 3, name: 'Блок 2', maxCards: null, cards: [] }
+      { id: 3, name: 'Блок 3', maxCards: null, cards: [] }
     ]
   },
   mounted() {
@@ -115,13 +138,22 @@ let app = new Vue({
       if (column.maxCards === null || column.cards.length < column.maxCards) {
         column.cards.push({
           id: Date.now(),
-          title: 'Новая карточка',
+          title: '',
           items: [
-            { text: 'Задача 1', completed: false },
-            { text: 'Задача 2', completed: false },
-            { text: 'Задача 3', completed: false }
+            { text: '', completed: false },
+            { text: '', completed: false },
+            { text: '', completed: false }
           ]
         })
+      }
+    },
+    deleteCard(cardId) {
+      for (let column of this.columns) {
+        const cardIndex = column.cards.findIndex(c => c.id === cardId)
+        if (cardIndex !== -1) {
+          column.cards.splice(cardIndex, 1)
+          break
+        }
       }
     },
     handleItemChanged(cardId) {
@@ -137,7 +169,10 @@ let app = new Vue({
             }
             this.moveCard(cardId, column.id, 3)
           } else if (progress > 50 && column.id === 1) {
-            this.moveCard(cardId, column.id, 2)
+            const column2 = this.columns.find(c => c.id === 2)
+            if (column2.cards.length < column2.maxCards) {
+              this.moveCard(cardId, column.id, 2)
+            }
           }
           break
         }

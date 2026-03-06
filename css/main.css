@@ -18,6 +18,11 @@ body {
   font-family: downcome;
   padding: 20px;
   background-color: #f9f9f9;
+  letter-spacing: 3px;
+}
+
+body span {
+  letter-spacing: 6px;
 }
 
 h1 {
@@ -39,6 +44,8 @@ h1:hover {
   justify-content: center;
 }
 
+
+
 .column {
   flex: 1;
   max-width: 300px;
@@ -52,7 +59,7 @@ h1:hover {
   font-family: downcome;
   font-size: 24px;
   color: #d01f57;
-  letter-spacing: 3px;
+  letter-spacing: 8px;
 }
 
 .card {
