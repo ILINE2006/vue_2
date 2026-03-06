@@ -17,11 +17,17 @@ Vue.component('note-column', {
         v-for="card in column.cards" 
         :key="card.id"
         :card="card"
+        :column-id="column.id"
         :is-locked="isLocked || column.id === 3"
         @item-changed="$emit('item-changed', $event)"
         @delete-card="$emit('delete-card', $event)">
       </note-card>
-      <button @click="$emit('add-card', column.id)" :disabled="isLocked">+ Добавить карточку</button>
+      <button 
+        v-if="column.id === 1"
+        @click="$emit('add-card', column.id)" 
+        :disabled="isLocked">
+        + Добавить карточку
+      </button>
     </div>
   `
 })
@@ -30,6 +36,10 @@ Vue.component('note-card', {
   props: {
     card: {
       type: Object,
+      required: true
+    },
+    columnId: {
+      type: Number,
       required: true
     },
     isLocked: {
@@ -47,14 +57,14 @@ Vue.component('note-card', {
   <div class="card" :class="{ completed: progress === 100 }">
     <h3>
       <input 
-        v-if="!isLocked" 
+        v-if="!isLocked && columnId === 1" 
         v-model="card.title" 
         class="card-title-input"
         placeholder="Название карточки">
       <span v-else>{{ card.title }}</span>
     </h3>
     <div class="progress-bar">
-      <div class="progress-fill"></div>
+      <div class="progress-fill" :style="{ width: progress + '%' }"></div>
     </div>
     <p>{{ progress }}%</p>
     <ul>
@@ -65,7 +75,7 @@ Vue.component('note-card', {
           @change="$emit('item-changed', card.id)"
           :disabled="isLocked">
         <input 
-          v-if="!isLocked"
+          v-if="!isLocked && columnId === 1"
           v-model="item.text" 
           class="item-input"
           placeholder="Название задачи">
@@ -73,9 +83,24 @@ Vue.component('note-card', {
       </li>
     </ul>
     <p v-if="card.completedAt" class="completed-date">Завершено: {{ card.completedAt }}</p>
-    <button v-if="!isLocked" @click="addItem" :disabled="card.items.length >= 5">+ Добавить</button>
-    <button v-if="!isLocked" @click="removeItem" :disabled="card.items.length <= 3">- Удалить</button>
-    <button v-if="!isLocked" @click="$emit('delete-card', card.id)" class="delete-btn">- Удалить карточку</button>
+    <button 
+      v-if="!isLocked && columnId === 1"
+      @click="addItem" 
+      :disabled="card.items.length >= 5">
+      + Добавить
+    </button>
+    <button 
+      v-if="!isLocked && columnId === 1"
+      @click="removeItem" 
+      :disabled="card.items.length <= 3">
+      - Удалить
+    </button>
+    <button 
+      v-if="!isLocked && columnId === 1"
+      @click="$emit('delete-card', card.id)" 
+      class="delete-btn">
+      Удалить карточку
+    </button>
   </div>
   `,
   methods: {
@@ -111,6 +136,7 @@ let app = new Vue({
     columns: {
       handler(newVal) {
         localStorage.setItem('notesApp', JSON.stringify(newVal))
+        this.checkCardProgress()
       },
       deep: true
     }
@@ -124,7 +150,7 @@ let app = new Vue({
         for (let card of column1.cards) {
           const completed = card.items.filter(i => i.completed).length
           const progress = (completed / card.items.length) * 100
-          if (progress > 50) {
+          if (progress >= 50) {
             return true
           }
         }
@@ -156,27 +182,28 @@ let app = new Vue({
         }
       }
     },
-    handleItemChanged(cardId) {
+    checkCardProgress() {
       for (let column of this.columns) {
-        const card = column.cards.find(c => c.id === cardId)
-        if (card) {
+        for (let card of column.cards) {
           const completed = card.items.filter(i => i.completed).length
           const progress = (completed / card.items.length) * 100
           
-          if (progress === 100 && column.id !== 3) {
+          if (progress >= 100 && column.id !== 3) {
             if (!card.completedAt) {
               card.completedAt = new Date().toLocaleString()
             }
-            this.moveCard(cardId, column.id, 3)
-          } else if (progress > 50 && column.id === 1) {
+            this.moveCard(card.id, column.id, 3)
+          } else if (progress >= 50 && column.id === 1) {
             const column2 = this.columns.find(c => c.id === 2)
             if (column2.cards.length < column2.maxCards) {
-              this.moveCard(cardId, column.id, 2)
+              this.moveCard(card.id, column.id, 2)
             }
           }
-          break
         }
       }
+    },
+    handleItemChanged(cardId) {
+      this.checkCardProgress()
     },
     moveCard(cardId, fromColumnId, toColumnId) {
       const fromColumn = this.columns.find(c => c.id === fromColumnId)
