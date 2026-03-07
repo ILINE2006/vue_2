@@ -118,3 +118,50 @@ button:disabled {
   color: #888;
   margin-top: 5px;
 }
+
+
+.search-container {
+  margin: 20px auto;
+  max-width: 600px;
+  text-align: center;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px 15px;
+  font-size: 16px;
+  border: 2px solid #ddd;
+  outline: none;
+}
+
+
+.search-results-count {
+  margin-top: 10px;
+  color: #666;
+}
+
+.search-results {
+  margin: 20px auto;
+  max-width: 800px;
+}
+
+.search-results h3 {
+  text-align: center;
+  color: #d01f57;
+}
+
+.search-result-card {
+  background: #fff;
+  padding: 15px;
+  margin: 10px 0;
+}
+
+.search-result-card p {
+  margin: 5px 0;
+}
+
+.no-results {
+  text-align: center;
+  color: #999;
+  margin: 20px;
+}

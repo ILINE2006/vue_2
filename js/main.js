@@ -124,7 +124,8 @@ let app = new Vue({
       { id: 1, name: 'Блок 1', maxCards: 3, cards: [] },
       { id: 2, name: 'Блок 2', maxCards: 5, cards: [] },
       { id: 3, name: 'Блок 3', maxCards: null, cards: [] }
-    ]
+    ],
+    searchQuery: ''
   },
   mounted() {
     const saved = localStorage.getItem('notesApp')
@@ -156,6 +157,22 @@ let app = new Vue({
         }
       }
       return false
+    },
+    filteredCards() { 
+      const allCards = []
+
+      for (let column of this.columns) {
+        for (let card of column.cards) {
+          allCards.push({
+            ...card,
+            columnName: column.name,  
+            columnId: column.id
+          })
+        }
+      }
+      return allCards.filter(card => 
+        card.title.toLowerCase().includes(this.searchQuery.toLowerCase())
+      )
     }
   },
   methods: {
@@ -216,6 +233,21 @@ let app = new Vue({
       } else {
         fromColumn.cards.splice(cardIndex, 0, card)
       }
+    },
+    getCardStatus(columnId) { 
+      if (columnId === 1) return 'Блок 1 (Новые)'
+      if (columnId === 2) return 'Блок 2 (В процессе)'
+      if (columnId === 3) return 'Блок 3 (Завершено)'
+      return 'Неизвестно'
+    },
+    
+    getCompletedItems(card) { 
+      return card.items.filter(i => i.completed).length
+    },
+    
+    getCardProgress(card) {  
+      const completed = card.items.filter(i => i.completed).length
+      return Math.round((completed / card.items.length) * 100)
     }
   }
 })
