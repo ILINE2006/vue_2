@@ -23,32 +23,11 @@
         @delete-card="deleteCard">
       </note-column>
     </div>
-        <div class="search-container">
-          <input 
-            type="text" 
-            v-model="searchQuery" 
-            placeholder="Поиск по названию карточки..."
-            class="search-input">
-          <p v-if="searchQuery" class="search-results-count">
-            Найдено: {{ filteredCards.length }} карточек
-          </p>
-        </div>
-        
-        <div class="search-results" v-if="filteredCards.length > 0">
-          <h3>Результаты поиска:</h3>
-          <div 
-            v-for="card in filteredCards" 
-            :key="card.id" 
-            class="search-result-card">
-            <p><strong>Название:</strong> {{ card.title || 'Без названия' }}</p>
-            <p><strong>Статус:</strong> {{ getCardStatus(card.columnId) }}</p>
-            <p><strong>Выполнено:</strong> {{ getCompletedItems(card) }} из {{ card.items.length }}</p>
-            <p><strong>Прогрес:</strong> {{ getCardProgress(card) }}%</p>
-          </div>
-        </div>
-        <div v-else-if="searchQuery" class="no-results">
-          <p>Ничего не найдено</p>
-        </div>
+    <search-results 
+    :search-query="searchQuery"
+    :filtered-cards="filteredCards"
+    @update-search="searchQuery = $event">
+  </search-results>
   </div>
 </body>
 </html>

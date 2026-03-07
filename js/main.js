@@ -1,3 +1,65 @@
+Vue.component('search-results', {
+  props: {
+    searchQuery: {
+      type: String,
+      required: true
+    },
+    filteredCards: {
+      type: Array,
+      required: true
+    }
+  },
+  template: `
+    <div>
+      <div class="search-container">
+        <input 
+          type="text" 
+          :value="searchQuery"
+          @input="$emit('update-search', $event.target.value)"
+          placeholder="Поиск по названию карточки..."
+          class="search-input">
+        <p v-if="searchQuery" class="search-results-count">
+          Найдено: {{ filteredCards.length }} карточек
+        </p>
+      </div>
+      
+      <div class="search-results" v-if="filteredCards.length > 0">
+        <h3>Результаты поиска:</h3>
+        <div 
+          v-for="card in filteredCards" 
+          :key="card.id" 
+          class="search-result-card">
+          <p><strong>Название:</strong> {{ card.title || 'Без названия' }}</p>
+          <p><strong>Статус:</strong> {{ getCardStatus(card.columnId) }}</p>
+          <p><strong>Выполнено:</strong> {{ getCompletedItems(card) }} из {{ card.items.length }}</p>
+          <p><strong>Прогресс:</strong> {{ getCardProgress(card) }}%</p>
+        </div>
+      </div>
+      <div v-else-if="searchQuery" class="no-results">
+        <p>Ничего не найдено</p>
+      </div>
+    </div>
+  `,
+  methods: {
+    getCardStatus(columnId) {
+      if (columnId === 1) return 'Блок 1 (Новые)'
+      if (columnId === 2) return 'Блок 2 (В процессе)'
+      if (columnId === 3) return 'Блок 3 (Завершено)'
+      return 'Неизвестно'
+    },
+    getCompletedItems(card) {
+      return card.items.filter(i => i.completed).length
+    },
+    getCardProgress(card) {
+      const completed = card.items.filter(i => i.completed).length
+      return Math.round((completed / card.items.length) * 100)
+    }
+  }
+})
+
+
+
+
 Vue.component('note-column', {
   props: {
     column: {
@@ -233,21 +295,6 @@ let app = new Vue({
       } else {
         fromColumn.cards.splice(cardIndex, 0, card)
       }
-    },
-    getCardStatus(columnId) { 
-      if (columnId === 1) return 'Блок 1 (Новые)'
-      if (columnId === 2) return 'Блок 2 (В процессе)'
-      if (columnId === 3) return 'Блок 3 (Завершено)'
-      return 'Неизвестно'
-    },
-    
-    getCompletedItems(card) { 
-      return card.items.filter(i => i.completed).length
-    },
-    
-    getCardProgress(card) {  
-      const completed = card.items.filter(i => i.completed).length
-      return Math.round((completed / card.items.length) * 100)
     }
   }
 })
